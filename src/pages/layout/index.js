@@ -1,8 +1,11 @@
-const Layout = () =>
-{
+import { Link ,useNavigate} from "react-router-dom"
+const Layout = () =>{
+    const navigate = useNavigate()
     return (
         <div>
-            <h1>Layout</h1>
+            <h1 onClick={()=>navigate('/login')}>Layout</h1>
+            
+
         </div>
     )
 }
