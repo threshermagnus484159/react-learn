@@ -1,2 +1,8 @@
-import { request } from './request'
-export { request }
+import { http  } from './request'
+import { getToken,setToken,removeToken } from './token'
+export {
+    http ,
+    getToken,
+    setToken,
+    removeToken
+}

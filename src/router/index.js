@@ -1,12 +1,13 @@
 import { createBrowserRouter } from 'react-router-dom'
 import Layout from '@/pages/layout';
 import Login from '@/pages/login';
+import AuthRouter from '@/components/AuthRouter';
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element:  <Layout />
+    element:  <AuthRouter> <Layout/> </AuthRouter>
   },
   {
     path: "/login",
