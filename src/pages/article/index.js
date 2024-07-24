@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select } from 'antd'
+import { Link, useNavigate } from 'react-router-dom'
+import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select,Popconfirm } from 'antd'
 import locale from 'antd/es/date-picker/locale/zh_CN'
 
 import { Table, Tag, Space } from 'antd'
@@ -7,7 +7,7 @@ import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import img404 from '@/assets/error.png'
 import { useChannel } from '@/hooks/useChannel'
 import { useEffect, useState } from 'react'
-import { getArticleListAPI } from '@/apis/article'
+import { getArticleListAPI,deleteArticleAPI ,getArticleByID} from '@/apis/article'
 
 const { Option } = Select
 const { RangePicker } = DatePicker
@@ -18,6 +18,7 @@ const { RangePicker } = DatePicker
 
 const Article = () => {
   const { channelList } = useChannel()
+  const navigate = useNavigate()
 
   const columns = [
     {
@@ -59,13 +60,26 @@ const Article = () => {
       render: data => {
         return (
           <Space size="middle">
-            <Button type="primary" shape="circle" icon={<EditOutlined />} />
-            <Button
+            <Button type="primary" shape="circle" icon={<EditOutlined />} onClick={()=>navigate(`/publish?id=${data.id}`)} />
+            <Popconfirm
+              title="是否确认删除？"
+              description="确定删除吗？"
+              onConfirm={()=>onConfirm(data)}
+              okText="Yes"
+              cancelText="No"
+              
+
+            >
+              <Button
               type="primary"
               danger
               shape="circle"
               icon={<DeleteOutlined />}
             />
+
+            </Popconfirm>
+
+            
           </Space>
         )
       }
@@ -124,6 +138,18 @@ const Article = () => {
     console.log(reqData);
   }
 
+  const onPageChange = (page)=>{
+    setreqData({
+      ...reqData,
+      page:page
+    })
+  }
+
+  const onConfirm =async (data) => {
+    await deleteArticleAPI(data.id)
+    setreqData({...reqData})
+  }
+
   return (
 
     <div>
@@ -170,7 +196,11 @@ const Article = () => {
       </Card>
 
       <Card title={`根据筛选条件共查询到 ${listcount} 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={list} />
+        <Table rowKey="id" columns={columns} dataSource={list} pagaination={{ 
+          total:listcount,
+          pageSize:reqData.per_page,
+          onChange:onPageChange
+        }} />
       </Card>
     </div>
   )

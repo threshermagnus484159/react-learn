@@ -11,20 +11,22 @@ import {
   message
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import './index.scss'
 
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
-import {  useState } from 'react' 
+import {  useEffect, useState } from 'react' 
 
-import { createArticleAPI } from '@/apis/article'
+import { createArticleAPI,getArticleByID,updateArticleAPI} from '@/apis/article'
 import { useChannel } from '@/hooks/useChannel'
 
 const { Option } = Select
 
 const Publish = () => {
   const {channelList} = useChannel()
+
+
 
   //提交表单
   const onFinish = (formvalue) => {
@@ -38,11 +40,22 @@ const Publish = () => {
       content:content,
       cover:{
         type:typechange,
-        images:imageList.map(item=>item.response.data.url)
+        images:imageList.map(item=>{
+          if(item.response){
+            return item.response.data.url
+          }else{
+            return item.url
+          }
+        })
       },
       channel_id:channel_id
       }
-      createArticleAPI(reaData)
+      if(articleID){
+        updateArticleAPI({...reaData , id:articleID})
+      }else{
+        createArticleAPI(reaData)
+      }
+      
     }
 
     const [imageList,setimageList] = useState([])
@@ -55,6 +68,31 @@ const Publish = () => {
       console.log('切换页面',e.target.value)
       settypechange(e.target.value)
     }
+    const [SearchParams] = useSearchParams()
+    const articleID = SearchParams.get('id')
+    const [form] = Form.useForm()
+    useEffect(() => {
+      async function getArticleDetail() {
+        const res = await getArticleByID(articleID)
+        const data = res.data
+        const { cover }= data
+        form.setFieldsValue({
+          ...data,
+          type:cover.type
+
+        })
+        settypechange(cover.type)
+        setimageList(cover.images.map(url=>{
+          return { url }
+        })) 
+      }
+      if (articleID){
+        getArticleDetail()
+      }
+      
+
+    },[articleID,form])
+    
 
 
   return (
@@ -63,7 +101,7 @@ const Publish = () => {
         title={
           <Breadcrumb items={[
             { title: <Link to={'/'}>首页</Link> },
-            { title: '发布文章' },
+            { title: `${articleID ? '编辑' : '新建'}文章` },
           ]}
           />
         }
@@ -73,6 +111,7 @@ const Publish = () => {
           wrapperCol={{ span: 16 }}
           initialValues={{ type: 0 }}
           onFinish={onFinish}
+          form = {form}
         >
           <Form.Item
             label="标题"
@@ -107,6 +146,7 @@ const Publish = () => {
             name='image'
             onChange={onChange}
             maxCount={typechange}
+            fileList={imageList}
           >
             {typechange === 0? null:
             <div style={{ marginTop: 8 }}>

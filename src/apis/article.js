@@ -22,3 +22,25 @@ export function getArticleListAPI(params){
         params
     })
 }
+
+export function deleteArticleAPI(id){
+    return http({
+        url:`/mp/articles/${id}`,
+        method:'DELETE',
+    })
+}
+
+export function getArticleByID(id){
+    return http({
+        url:`/mp/articles/${id}`,
+        method:'GET',
+    })
+}
+
+export function updateArticleAPI(data){
+    return http({
+        url:`/mp/articles/${data.id}?draft=false`,
+        method:'PUT',
+        data
+    })
+}
