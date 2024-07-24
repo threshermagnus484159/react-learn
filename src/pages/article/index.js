@@ -86,21 +86,42 @@ const Article = () => {
       title: 'wkwebview离线化加载h5资源解决方案'
     }
   ]
+  const [reqData,setreqData] = useState({
+    status:'',
+    channel_id:'',
+    begin_pubdate:'',
+    end_pubdate:'',
+    page:1,
+    per_page:4
+  })
 
   const [list,setlist] = useState([])
   const [listcount,setlistcount] = useState(0)
   useEffect(()=>{
     const getArticleList = async () => {
-      const res = await getArticleListAPI()
+      const res = await getArticleListAPI(reqData)
       setlist(res.data.results)
       setlistcount(res.data.total_count)
     }
     getArticleList()
-  },[])
+  },[reqData])
 
   const status = {
     1: <Tag color="orange">待审核</Tag>,
     2: <Tag color="green">审核通过</Tag>,
+  }
+
+
+
+  const onFinish = (value)=> {
+    setreqData({
+      ...reqData,
+      channel_id:value.channel_id,
+      begin_pubdate:value.date[0].format('YYYY-MM-DD'),
+      end_pubdate:value.date[1].format('YYYY-MM-DD'),
+      status:value.status
+    })
+    console.log(reqData);
   }
 
   return (
@@ -115,7 +136,7 @@ const Article = () => {
         }
         style={{ marginBottom: 20 }}
       >
-        <Form initialValues={{ status: '' }}>
+        <Form initialValues={{ status: '' }} onFinish={onFinish}>
           <Form.Item label="状态" name="status">
             <Radio.Group>
               <Radio value={''}>全部</Radio>
