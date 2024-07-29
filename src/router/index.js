@@ -2,9 +2,12 @@ import { createBrowserRouter } from 'react-router-dom'
 import Layout from '@/pages/layout';
 import Login from '@/pages/login';
 import AuthRouter from '@/components/AuthRouter';
-import Home from '@/pages/home';
-import Article from '@/pages/article';
-import Publish from '@/pages/publish';
+
+import { lazy, Suspense } from 'react';
+
+const Home = lazy(() => import('@/pages/home'))
+const Article = lazy(() => import('@/pages/article'))
+const Publish = lazy(() => import('@/pages/publish'))
 
 
 const router = createBrowserRouter([
@@ -14,16 +17,16 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />
+        element: <Suspense fallback = {'加载中'}><Home /></Suspense>
       },
       {
         path: "article",
-        element: <Article />
+        element: <Suspense fallback = {'加载中'}><Article /></Suspense>
         
       },
       {
         path: "publish",
-        element: <Publish />
+        element: <Suspense fallback = {'加载中'}><Publish /></Suspense>
       }
     ]
   },

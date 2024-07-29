@@ -34,15 +34,15 @@ const Login = () => {
               message: '手机号码格式不对'
             }]}
           >
-            <Input size="large" placeholder="请输入手机号" />
+            <Input size="large" placeholder="请随便输入一个手机号" />
           </Form.Item>
           <Form.Item
             name="code"
             rules={[{ 
-              required: true, message: '请输入验证码' 
+              required: true, message: '请输入246810' 
             }]}
           >
-            <Input size="large" placeholder="请输入验证码" />
+            <Input size="large" placeholder="请输入验证码（246810）" />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit" size="large" block>
